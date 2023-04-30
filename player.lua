@@ -6,12 +6,14 @@ local player = object:new()
 
 player.pos = vec2.new(5, 5)
 player.size = vec2.new(2, 2)
-
-player.texture = "player.png"
-player.hp = 10000
-player.speed = 10
-player.weapons = {}
 player.z_index = 0
+player.texture = "player.png"
+
+player.speed = 10
+player.hp = 10000
+player.weapons = {}
+player.active = true
+player.alignment = "humans"
 
 player.move = function(self)
     local direction = vec2.zero()

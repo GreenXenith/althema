@@ -15,14 +15,14 @@ bullet.new = function(self, def, pos, rotation, velocity)
     o.pos = pos
     o.rotation = rotation
     o.velocity = velocity
-    o.ttl = 2
+    o._ttl = 2
 
     return o
 end
 
 bullet.update = function(self, dtime)
-    self.ttl = self.ttl - dtime
-    if self.ttl <= 0 then return game.world:remove_object(self) end
+    self._ttl = self._ttl - dtime
+    if self._ttl <= 0 then return game.world:remove_object(self) end
 
     local old_pos = self.pos
     object.update(self, dtime)
