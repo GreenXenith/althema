@@ -16,7 +16,7 @@ enemy.spawn = function(self, pos, def)
 
     for key, value in pairs(def) do self[key] = value end
     o.pos = pos
-    o.hp = 10
+    o.hp = 1000
     o.speed = 2
     o.brain = {
         angle = 0,
@@ -30,6 +30,16 @@ enemy.spawn = function(self, pos, def)
     o:set_collider(o.size * 0.75)
 
     game.world:add_object(o)
+end
+
+enemy.on_hit = function(self, info)
+    if info.damage then
+        self.hp = self.hp - info.damage
+    end
+
+    if self.hp <= 0 then
+        game.world:remove_object(self)
+    end
 end
 
 enemy.move_to = function(self, pos)

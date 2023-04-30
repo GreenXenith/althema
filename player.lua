@@ -8,6 +8,7 @@ player.pos = vec2.new(5, 5)
 player.size = vec2.new(2, 2)
 
 player.texture = "player.png"
+player.hp = 10000
 player.speed = 10
 player.weapons = {}
 player.z_index = 0
@@ -46,6 +47,7 @@ local weapons = {
         size = vec2.new(1.5, 1.5),
         firerate = 1500, -- rounds per minute
         bullet_speed = 100,
+        damage = 10,
     }
 }
 

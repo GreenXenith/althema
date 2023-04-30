@@ -7,10 +7,11 @@ particle.new = function(self, texture, pos, size, rotation, velocity, time)
     local o = setmetatable(object:new(), self)
 
     o.texture = texture
-    o.pos = pos or p.pos
-    o.velocity = velocity or p.velocity
-    o.size = size or p.size
-    o.rotation = rotation or p.rotation
+    o.pos = pos
+    o.velocity = velocity
+    if size then o.size = size end
+    if rotation then o.rotation = rotation end
+
     o._timer = time
 
     game.world:add_object(o)

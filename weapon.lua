@@ -29,8 +29,19 @@ bullet.update = function(self, dtime)
 
     for o in pairs(game.world.objects) do
         if o.collider then
-            local nx = o.collider:rayCast(old_pos.x, old_pos.y, self.pos.x, self.pos.y, 1, o.pos.x, o.pos.y, 0)
+            local nx, _, f = o.collider:rayCast(old_pos.x, old_pos.y, self.pos.x, self.pos.y, 1, o.pos.x, o.pos.y, 0)
             if nx then
+                local hit_pos = vec2.new(
+                    old_pos.x + (self.pos.x - old_pos.x) * f,
+                    old_pos.y + (self.pos.y - old_pos.y) * f
+                )
+
+                if o.on_hit then o:on_hit({
+                    hit_pos = hit_pos,
+                    source = "bullet",
+                    damage = self.damage,
+                }) end
+
                 return game.world:remove_object(self)
             end
         end
@@ -59,22 +70,9 @@ weapon.spawn_projectile = function(self)
     local velocity = vec2.normalize(vec2.new(math.cos(self.rotation), math.sin(self.rotation))) *
         self.bullet_speed + self.parent.velocity
 
-    game.world:add_object(bullet:new(nil, self.pos, self.rotation, velocity))
-    -- local max_time = 1
-    -- local max_pos = self.pos + velocity * max_time
-    -- local time = max_time
-
-    -- for o in pairs(game.world.objects) do
-    --     if o.collider then
-    --         local nx, _, f = o.collider:rayCast(self.pos.x, self.pos.y, max_pos.x, max_pos.y, 1, o.pos.x, o.pos.y, 0)
-    --         if nx then
-    --             local travel = vec2.new((max_pos.x - self.pos.x) * f, (max_pos.y - self.pos.y) * f)
-    --             time = math.min(time, vec2.length(travel) / self.bullet_speed)
-    --         end
-    --     end
-    -- end
-
-    -- particle:new("bullet.png", self.pos, vec2.new(0.75, 0.75), self.rotation, velocity, time)
+    game.world:add_object(bullet:new({
+        damage = self.damage,
+    }, self.pos, self.rotation, velocity))
 end
 
 weapon.update = function(self, dtime)
