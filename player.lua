@@ -10,6 +10,7 @@ player.size = vec2.new(2, 2)
 player.texture = "player.png"
 player.speed = 10
 player.weapons = {}
+player.z_index = 0
 
 player.move = function(self)
     local direction = vec2.zero()
@@ -49,22 +50,22 @@ local weapons = {
 }
 
 player.load = function(self)
-    local bl = game.world:add_object(weapon.new_weapon(weapons.standard))
+    local bl = game.world:add_object(weapon.new_weapon(weapons.standard), 1)
     bl:attach(self, vec2.new(-0.1, -0.75), 0, true, true)
 
-    local ml = game.world:add_object(weapon.new_weapon(weapons.standard))
+    local ml = game.world:add_object(weapon.new_weapon(weapons.standard), 2)
     ml:attach(self, vec2.new(0.5, -0.6), 0, true, true)
 
-    local tl = game.world:add_object(weapon.new_weapon(weapons.standard))
+    local tl = game.world:add_object(weapon.new_weapon(weapons.standard), 3)
     tl:attach(self, vec2.new(0.1, -0.5), 0, true, true)
 
-    local br = game.world:add_object(weapon.new_weapon(weapons.standard))
+    local br = game.world:add_object(weapon.new_weapon(weapons.standard), 1)
     br:attach(self, vec2.new(-0.1, 0.75), 0, true, true)
 
-    local mr = game.world:add_object(weapon.new_weapon(weapons.standard))
+    local mr = game.world:add_object(weapon.new_weapon(weapons.standard), 2)
     mr:attach(self, vec2.new(0.5, 0.6), 0, true, true)
 
-    local tr = game.world:add_object(weapon.new_weapon(weapons.standard))
+    local tr = game.world:add_object(weapon.new_weapon(weapons.standard), 3)
     tr:attach(self, vec2.new(0.1, 0.5), 0, true, true)
 
     player.weapons = {bl, ml, tl, br, mr, tr}

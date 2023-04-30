@@ -12,8 +12,6 @@ object.new_object = function()
     }, {__index = object})
 end
 
-object.load = function() end
-
 object.update = function(self, dtime)
     if self.velocity then
         if self.velocity.x ~= 0 or self.velocity.y ~= 0 then

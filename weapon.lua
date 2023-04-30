@@ -1,5 +1,6 @@
 local vec2 = require("vector2")
 local object = require("object")
+local particle = require("particle")
 
 local weapon = setmetatable({}, {__index = object})
 
@@ -17,16 +18,10 @@ weapon.firing = function(self, firing)
 end
 
 weapon.spawn_projectile = function(self)
-    local bullet = object.new_object()
-    bullet.texture = "bullet.png"
-    bullet.size = vec2.new(0.75, 0.75)
-    bullet.rotation = self.rotation
-    bullet.pos = self.pos
-
-    bullet.velocity = vec2.normalize(vec2.new(math.cos(self.rotation), math.sin(self.rotation))) *
+    local velocity = vec2.normalize(vec2.new(math.cos(self.rotation), math.sin(self.rotation))) *
         self.bullet_speed + self.parent.velocity
 
-    game.world:add_object(bullet)
+    particle.spawn("bullet.png", self.pos, vec2.new(0.75, 0.75), self.rotation, velocity, 0.5)
 end
 
 weapon.update = function(self, dtime)

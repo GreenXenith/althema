@@ -4,6 +4,7 @@ local world = {
     tile_w = 32, tile_h = 32,
 
     objects = {},
+
     player = require("player"),
 
     tiles = {
@@ -17,11 +18,22 @@ local world_tiles = {
     "concrete.png",
 }
 
-world.add_object = function(self, o)
-    table.insert(self.objects, o)
-    o:load()
+world.add_object = function(self, o, z_index)
+    self.objects[o] = o
+    o.z_index = z_index or o.z_index
+    if o.load then o:load() end
 
     return o
+end
+
+world.remove_object = function(self, o)
+    local object = self.objects[o]
+    if object then
+        if object.remove then object:remove() end
+
+        self.objects[o] = nil
+        return true
+    end
 end
 
 world.load = function(self)
@@ -29,11 +41,11 @@ world.load = function(self)
 end
 
 world.update = function(self, dtime)
-    for _, object in ipairs(self.objects) do
+    for object in pairs(self.objects) do
         object:update(dtime)
     end
 
-    game.camera.pos = self.objects[1].pos
+    game.camera.pos = self.player.pos
 end
 
 world.draw = function(self)
@@ -48,12 +60,26 @@ world.draw = function(self)
     game.camera:draw(game.media["crosshair.png"], cx, cy)
 
     -- Draw objects
-    for _, object in ipairs(self.objects) do
+    local layers = {}
+    local min_z, max_z = 0, 0
+    for object in pairs(self.objects) do
         if object.texture then
-            game.camera:draw(
-                game.media[object.texture], object.pos.x, object.pos.y,
-                object.size.x, object.size.y, object.rotation
-            )
+            local z = object.z_index or 0
+            layers[z] = layers[z] or {}
+            min_z, max_z = math.min(min_z, z), math.max(z, max_z)
+
+            table.insert(layers[z], object)
+        end
+    end
+
+    for z = min_z, max_z do
+        if layers[z] then
+            for _, object in ipairs(layers[z]) do
+                game.camera:draw(
+                    game.media[object.texture], object.pos.x, object.pos.y,
+                    object.size.x, object.size.y, object.rotation
+                )
+            end
         end
     end
 end
