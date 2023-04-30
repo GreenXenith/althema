@@ -27,6 +27,8 @@ enemy.spawn = function(self, pos, def)
         follow = nil,
     }
 
+    o:set_collider(o.size * 0.75)
+
     game.world:add_object(o)
 end
 

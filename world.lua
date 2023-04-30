@@ -40,6 +40,8 @@ world.remove_object = function(self, o)
 end
 
 world.load = function(self)
+    love.physics.setMeter(1)
+
     self:add_object(self.player)
 
     enemy:spawn(vec2.new(10, 10), enemy.types.medium)

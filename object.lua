@@ -8,8 +8,14 @@ local object = {
 }
 object.__index = object
 
-object.new = function(self)
-    return setmetatable({children = {}}, self)
+object.new = function(self, o)
+    o = o or {}
+    o.children = {}
+    return setmetatable(o, self)
+end
+
+object.set_collider = function(self, size)
+    self.collider = love.physics.newRectangleShape(size.x, size.y)
 end
 
 object.update = function(self, dtime)

@@ -45,7 +45,7 @@ local weapons = {
         texture = "gun.png",
         size = vec2.new(1.5, 1.5),
         firerate = 1500, -- rounds per minute
-        bullet_speed = 50,
+        bullet_speed = 100,
     }
 }
 
