@@ -86,7 +86,7 @@ vector2.distance = function(v1, v2)
 end
 
 vector2.direction = function(v1, v2)
-    return vector2.subtract(v2, v1):normalize()
+    return vector2.normalize(vector2.subtract(v2, v1))
 end
 
 vector2.angle = function(v1, v2)

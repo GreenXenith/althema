@@ -1,11 +1,12 @@
 game = {
     media = {},
-    state = "overmap",
 }
 
 game.ui = require("ui")({
     font = love.graphics.newFont("media/fonts/Unlock-Regular.ttf", 50)
 })
+
+game.camera = require("camera")
 
 local vec2 = require("vector2")
 
@@ -24,18 +25,29 @@ local function load_textures(path)
     end
 end
 
-local world = require("world")
+game.world = require("world")
 local overmap = require("overmap")
 
+-- game.keybinds = {
+--     up = {up = true, w = true},
+--     down = {down = true, s = true},
+--     left = {left = true, a = true},
+--     right = {right = true, d = true},
+--     select = {space = true, enter = true},
+--     map = {m = true, q = true},
+--     inventory = {i = true, e = true},
+--     exit = {escape = true},
+-- }
+
 game.keybinds = {
-    up = {up = true, w = true},
-    down = {down = true, s = true},
-    left = {left = true, a = true},
-    right = {right = true, d = true},
-    select = {space = true, enter = true},
-    map = {m = true, q = true},
-    inventory = {i = true, e = true},
-    exit = {escape = true},
+    up = {"up", "w"},
+    down = {"down", "s"},
+    left = {"left", "a"},
+    right = {"right", "d"},
+    select = {"space", "enter"},
+    map = {"m", "q"},
+    inventory = {"i", "e"},
+    exit = {"escape"},
 }
 
 function love.keypressed(key)
@@ -112,23 +124,34 @@ function love.load()
     -- Preload media
     load_textures("media/textures")
 
+    game.world:load()
     overmap:load()
+
+    game.state = "world"
 end
 
 local states = {
-    overmap = function()
-        overmap:draw()
-        game.show_overmap()
-    end,
-    world = function()
-        world.draw()
-    end
+    overmap = {
+        update = function() end,
+        draw = function()
+            overmap:draw()
+            game.show_overmap()
+        end,
+    },
+    world = {
+        update = function(dtime) game.world:update(dtime) end,
+        draw = function() game.world:draw() end
+    }
 }
+
+function love.update(dtime)
+    states[game.state].update(dtime)
+end
 
 function love.draw()
     love.graphics.clear()
 
-    states[game.state]()
+    states[game.state].draw()
 
     game.ui.draw_dialog()
 end

@@ -83,19 +83,17 @@ overmap.draw = function(self)
 
     love.graphics.setCanvas(self.canvas)
 
-    for y = 0, self.height - 1 do
-        for x = 0, self.width - 1 do
-            local idx = y * self.width + x + 1
+    for idx = 1, self.width * self.height do
+        local x, y = idx % self.width - 1, math.floor(idx / self.width)
 
-            self:draw_tile(x, y, terrain_tiles[self.tiles.terrain[idx]])
+        self:draw_tile(x, y, terrain_tiles[self.tiles.terrain[idx]])
 
-            if self.tiles.enemy[idx] > 0 then
-                self:draw_tile(x, y, overmap_icons.enemy)
-            end
+        if self.tiles.enemy[idx] > 0 then
+            self:draw_tile(x, y, overmap_icons.enemy)
+        end
 
-            if y == ppos.y and x == ppos.x then
-                self:draw_tile(x, y, overmap_icons.mech)
-            end
+        if y == ppos.y and x == ppos.x then
+            self:draw_tile(x, y, overmap_icons.mech)
         end
     end
 
