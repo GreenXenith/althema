@@ -1,6 +1,9 @@
+local vec2 = require("vector2")
+local enemy = require("enemy")
+
 local world = {
     seed = math.random() * 2 ^ 32,
-    width = 64, height = 64,
+    width = 32, height = 32,
     tile_w = 32, tile_h = 32,
 
     objects = {},
@@ -38,6 +41,8 @@ end
 
 world.load = function(self)
     self:add_object(self.player)
+
+    enemy:spawn(vec2.new(10, 10), enemy.types.medium)
 end
 
 world.update = function(self, dtime)
@@ -56,9 +61,6 @@ world.draw = function(self)
         game.camera:draw(game.media[texture], x, y)
     end
 
-    local cx, cy = game.camera:get_local_cursor()
-    game.camera:draw(game.media["crosshair.png"], cx, cy)
-
     -- Draw objects
     local layers = {}
     local min_z, max_z = 0, 0
@@ -75,13 +77,20 @@ world.draw = function(self)
     for z = min_z, max_z do
         if layers[z] then
             for _, object in ipairs(layers[z]) do
-                game.camera:draw(
-                    game.media[object.texture], object.pos.x, object.pos.y,
-                    object.size.x, object.size.y, object.rotation
-                )
+                if type(object.texture) == "table" then -- animated
+
+                else
+                    game.camera:draw(
+                        game.media[object.texture], object.pos.x, object.pos.y,
+                        object.size.x, object.size.y, object.rotation
+                    )
+                end
             end
         end
     end
+
+    local cx, cy = game.camera:get_local_cursor()
+    game.camera:draw(game.media["crosshair.png"], cx, cy)
 end
 
 return world

@@ -1,26 +1,28 @@
 local object = require("object")
 
-local particle = setmetatable({}, {__index = object})
+local particle = object:new()
+particle.__index = particle
 
-particle.spawn = function(texture, pos, size, rotation, velocity, time)
-    local p = setmetatable(object.new_object(), {__index = particle})
-    p.texture = texture
-    p.pos = pos or p.pos
-    p.velocity = velocity or p.velocity
-    p.size = size or p.size
-    p.rotation = rotation or p.rotation
-    p._timer = time
+particle.new = function(self, texture, pos, size, rotation, velocity, time)
+    local o = setmetatable(object:new(), self)
 
-    game.world:add_object(p)
+    o.texture = texture
+    o.pos = pos or p.pos
+    o.velocity = velocity or p.velocity
+    o.size = size or p.size
+    o.rotation = rotation or p.rotation
+    o._timer = time
+
+    game.world:add_object(o)
 end
 
 particle.update = function(self, dtime)
-
     self._timer = self._timer - dtime
     if self._timer <= 0 then
         game.world:remove_object(self)
     end
-    getmetatable(particle).__index.update(self, dtime)
+
+    object.update(self, dtime)
 end
 
 return particle

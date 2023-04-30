@@ -1,15 +1,15 @@
 local vec2 = require("vector2")
 
-local object = {}
+local object = {
+    pos = vec2.zero(),
+    rotation = 0,
+    size = vec2.new(1, 1),
+    velocity = vec2.zero(),
+}
+object.__index = object
 
-object.new_object = function()
-    return setmetatable({
-        children = {},
-        pos = vec2.zero(),
-        size = vec2.new(1, 1),
-        rotation = 0,
-        velocity = vec2.zero(),
-    }, {__index = object})
+object.new = function(self)
+    return setmetatable({children = {}}, self)
 end
 
 object.update = function(self, dtime)
