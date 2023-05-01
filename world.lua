@@ -6,13 +6,12 @@ local player = require("player")
 local world = {
     width = 32, height = 32,
     tile_w = 32, tile_h = 32,
+    player = player,
 }
 
 world.load_area = function(self, area) -- tile id
     self.objects = {}
     self.colliders = {}
-
-    self.player = player
 
     self.data = area
     self.data.enemies = self.data.enemies or self.data.max_enemies
@@ -187,6 +186,8 @@ world.draw = function(self)
 
     local cx, cy = game.camera:get_local_cursor()
     game.camera:draw(game.media["crosshair.png"], cx, cy)
+
+    game.world.player:draw_hp(32, 32, 5)
 end
 
 return world

@@ -1,9 +1,9 @@
 local menu = {
     padding = 50,
-    main_width = 0.666,
-    status_height = 0.5,
+    main_width = 0.6,
 
     state = "overmap",
+    dmg_str = "DMG: %s%% / %s%%",
 }
 
 menu.overmap = require("overmap")
@@ -13,11 +13,12 @@ menu.load = function(self)
 
     local ww, wh = love.window.getMode()
     menu.main_area = love.graphics.newCanvas(ww * self.main_width, wh - self.padding * 2)
+    menu.status_area = love.graphics.newCanvas(ww - ww * self.main_width - self.padding * 3, wh - self.padding * 2)
+
+    menu.damage_text = love.graphics.newText(game.ui.font, "")
 end
 
-menu.update = function(self)
-
-end
+menu.update = function(_, dtime) end
 
 menu.draw = function(self)
     if self.state == "overmap" then
@@ -36,15 +37,35 @@ menu.draw = function(self)
                 0, scale, scale
             )
 
-            love.graphics.setColor(0, 255, 255)
+            love.graphics.setColor(0, 1, 1)
             love.graphics.setLineWidth(2)
             love.graphics.rectangle("line", 0, 0, self.main_area:getWidth(), self.main_area:getHeight())
-            love.graphics.setColor(255, 255, 255)
+            love.graphics.setColor(1, 1, 1)
+        end)
+
+        self.status_area:renderTo(function()
+            love.graphics.clear()
+
+            local w = self.status_area:getDimensions()
+            local scale = w * 0.75 / 32
+            game.world.player:draw_hp(w * 0.125, w * 0.125, scale)
+
+            self.damage_text:set(self.dmg_str:format(
+                100 - game.world.player.hp.upper,
+                100 - game.world.player.hp.lower
+            ))
+            love.graphics.draw(self.damage_text, w * 0.125, scale * 32 + w * 0.25, 0, 0.65, 0.65)
+
+            love.graphics.setColor(0, 1, 1)
+            love.graphics.setLineWidth(2)
+            love.graphics.rectangle("line", 0, 0, self.status_area:getWidth(), self.status_area:getHeight())
+            love.graphics.setColor(1, 1, 1)
         end)
 
     end
 
     love.graphics.draw(self.main_area, self.padding, self.padding)
+    love.graphics.draw(self.status_area, self.main_area:getWidth() + self.padding * 2, self.padding)
 end
 
 return menu

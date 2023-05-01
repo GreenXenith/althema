@@ -18,6 +18,18 @@ player.weapons = {}
 player.active = true
 player.alignment = "humans"
 
+player.draw_hp = function(self, x, y, scale)
+    local uh, lh = self.hp.upper / 100, self.hp.lower / 100
+
+    love.graphics.setColor(math.max(0, 1 - uh), math.min(uh, 1), 0)
+    love.graphics.draw(game.media["hp_upper.png"], x, y, 0, scale, scale)
+
+    love.graphics.setColor(math.max(0, 1 - lh), math.min(lh, 1), 0)
+    love.graphics.draw(game.media["hp_lower.png"], x, y, 0, scale, scale)
+
+    love.graphics.setColor(1, 1, 1)
+end
+
 player.move = function(self)
     local direction = vec2.zero()
 
@@ -48,7 +60,7 @@ end
 
 player.on_hit = function(self, info)
     if info.damage then
-        if math.random() > 0.5 then
+        if math.random() > 0.4 then
             self.hp.upper = self.hp.upper - info.damage
         else
             self.hp.lower = self.hp.lower - info.damage

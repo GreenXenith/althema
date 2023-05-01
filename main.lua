@@ -59,9 +59,9 @@ game.areas = require("areas")
 
 game.pause = function(self, pause)
     self.paused = pause
-    if pause then
-        game.menu:load()
-    end
+    -- if pause then
+    --     game.menu:load()
+    -- end
 end
 
 -- Main functions
@@ -82,6 +82,7 @@ function love.load()
     load_textures("media/textures")
 
     -- Begin on menu
+    game.menu:load()
     game:pause(true)
 
     if game.DEVMODE then
