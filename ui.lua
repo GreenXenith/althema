@@ -60,6 +60,10 @@ ui.hide_dialog = function()
     end
 end
 
+ui.draw = function(self)
+    self.draw_dialog()
+end
+
 return function(config)
     ui.font = config.font
     return ui

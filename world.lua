@@ -1,18 +1,15 @@
 local vec2 = require("vector2")
 local enemy = require("enemy")
 local collider = require("collider")
+local player = require("player")
 
 local world = {
-    seed = math.random() * 2 ^ 32,
     width = 32, height = 32,
     tile_w = 32, tile_h = 32,
+}
 
-    objects = {},
-    colliders = {},
-
-    player = require("player"),
-
-    tiles = {
+game.world_tiles = {
+    {
         {},
         {1, 1, 1, 1},
         {
@@ -22,7 +19,19 @@ local world = {
     },
 }
 
-for i = 1, world.width * world.height do world.tiles[1][i] = 2 end
+-- TEMPORARY ground tiles
+for i = 1, world.width * world.height do game.world_tiles[1][1][i] = 2 end
+
+world.enter_tile = function(self, tile_id) -- tile id
+    self.objects = {}
+    self.colliders = {}
+
+    self.player = player
+
+    self.tiles = game.world_tiles[tile_id]
+
+    self:load()
+end
 
 local world_tiles = {
     "asphalt.png",
@@ -59,6 +68,12 @@ world.remove_object = function(self, o)
         return true
     end
 end
+
+game.register_key_callback(function(key)
+    if not game.paused and game.keybinds.exit[key] then
+        return game:pause(true)
+    end
+end)
 
 world.load = function(self)
     love.physics.setMeter(1)

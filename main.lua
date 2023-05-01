@@ -1,14 +1,8 @@
 game = {
     media = {},
+    paused = false,
+    width = 1280, height = 720,
 }
-
-game.ui = require("ui")({
-    font = love.graphics.newFont("media/fonts/Unlock-Regular.ttf", 50)
-})
-
-game.camera = require("camera")
-
-local vec2 = require("vector2")
 
 local function load_textures(path)
     for _, name in pairs(love.filesystem.getDirectoryItems(path)) do
@@ -25,133 +19,82 @@ local function load_textures(path)
     end
 end
 
-game.world = require("world")
-local overmap = require("overmap")
-
--- game.keybinds = {
---     up = {up = true, w = true},
---     down = {down = true, s = true},
---     left = {left = true, a = true},
---     right = {right = true, d = true},
---     select = {space = true, enter = true},
---     map = {m = true, q = true},
---     inventory = {i = true, e = true},
---     exit = {escape = true},
--- }
+local function keybind(...)
+    local binds = {...}
+    for _, key in ipairs(binds) do
+        binds[key] = true
+    end
+    return binds
+end
 
 game.keybinds = {
-    up = {"up", "w"},
-    down = {"down", "s"},
-    left = {"left", "a"},
-    right = {"right", "d"},
-    select = {"space", "enter"},
-    map = {"m", "q"},
-    inventory = {"i", "e"},
-    exit = {"escape"},
+    up = keybind("up", "w"),
+    down = keybind("down", "s"),
+    left = keybind("left", "a"),
+    right = keybind("right", "d"),
+    select = keybind("space", "enter"),
+    map = keybind("m", "q"),
+    inventory = keybind("i", "e"),
+    exit = keybind("escape"),
 }
 
+game.key_callbacks = {}
+
+game.register_key_callback = function(callback)
+    table.insert(game.key_callbacks, callback)
+end
+
+-- Load modules
+game.ui = require("ui")({
+    font = love.graphics.newFont("media/fonts/Unlock-Regular.ttf", 50)
+})
+
+game.menu = require("menu")
+game.camera = require("camera")
+game.world = require("world")
+
+game.pause = function(self, pause)
+    self.paused = pause
+    if pause then
+        game.menu:load()
+    end
+end
+
+-- Main functions
 function love.keypressed(key)
-    if game.ui.dialog then
-        if game.keybinds.exit[key] then
-            overmap.player.pos = overmap.player.last_pos
-            game.ui.hide_dialog()
-        end
-
-        return
-    end
-
-    local move = vec2.zero()
-    if game.keybinds.up[key] then
-        move.y = -1
-    end
-    if game.keybinds.down[key] then
-        move.y = 1
-    end
-    if game.keybinds.left[key] then
-        move.x = -1
-    end
-    if game.keybinds.right[key] then
-        move.x = 1
-    end
-
-    local target = move + overmap.player.pos
-    local tile = overmap:get_tile(target.x, target.y)
-
-    if tile.terrain > 2 then
-        overmap.player.last_pos = overmap.player.pos
-        overmap.player.pos = target
-
-        overmap:process_current_tile()
-    end
-end
-
-function love.mousepressed(x, y, button)
-    if game.ui.dialog then
-        if button == 1 then
-            for name, rect in pairs(game.ui.dialog.buttons) do
-                if x >= rect[1] and x <= rect[3] and y >= rect[2] and y <= rect[4] then
-                    if name == "btn_no" then
-                        overmap.player.pos = overmap.player.last_pos
-                    elseif name == "btn_yes" then
-                        overmap:enter_current_tile()
-                    end
-
-                    game.ui.hide_dialog()
-                end
-            end
-        end
-    end
-end
-
-game.show_overmap = function()
-    local ww, wh = love.window.getMode()
-    local scale = ww / overmap.width / overmap.tile_w
-
-    love.graphics.draw(
-        overmap.canvas,
-        (-overmap.player.pos.x - 0.5) * 32 * scale + ww / 2, (-overmap.player.pos.y - 0.5) * 32 * scale + wh / 2,
-        0, scale, scale
-    )
+    for _, callback in ipairs(game.key_callbacks) do callback(key) end
 end
 
 function love.load()
     love.window.setTitle("Althema")
 
-    love.window.setMode(1920, 1080, {resizable = true})
-    love.window.maximize()
+    love.window.setMode(game.width, game.height)
+    -- love.window.maximize()
     love.graphics.setDefaultFilter("nearest")
 
     -- Preload media
     load_textures("media/textures")
 
-    game.world:load()
-    overmap:load()
-
-    game.state = "world"
+    -- Begin on menu
+    game:pause(true)
 end
 
-local states = {
-    overmap = {
-        update = function() end,
-        draw = function()
-            overmap:draw()
-            game.show_overmap()
-        end,
-    },
-    world = {
-        update = function(dtime) game.world:update(dtime) end,
-        draw = function() game.world:draw() end
-    }
-}
-
 function love.update(dtime)
-    states[game.state].update(dtime)
+    if not game.paused then
+        game.world:update(dtime)
+    else
+        game.menu:update(dtime)
+    end
 end
 
 function love.draw()
     love.graphics.clear()
 
-    states[game.state].draw()
+    if not game.paused then
+        game.world:draw()
+    else
+        game.menu:draw()
+    end
 
-    game.ui.draw_dialog()
+    game.ui:draw()
 end
