@@ -86,7 +86,19 @@ world.load = function(self)
 end
 
 world.update = function(self, dtime)
-    if self.data.enemies == 0 then return game:pause(true) end
+    if self.data.enemies == 0 then
+        local area = self.data
+        game.areas[area.index - 11].discovered = true
+        game.areas[area.index - 10].discovered = true
+        game.areas[area.index - 9 ].discovered = true
+        game.areas[area.index - 1 ].discovered = true
+        game.areas[area.index + 1 ].discovered = true
+        game.areas[area.index + 9 ].discovered = true
+        game.areas[area.index + 10].discovered = true
+        game.areas[area.index + 11].discovered = true
+
+        return game:pause(true)
+    end
 
     for object in pairs(self.objects) do
         object:update(dtime)
