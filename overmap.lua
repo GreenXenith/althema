@@ -6,7 +6,7 @@ local overmap = {
 }
 
 overmap.player = {
-    pos = vec2.new(4, 8),
+    pos = vec2.new(4, 7),
     last_pos = vec2.zero(),
 }
 
@@ -24,14 +24,32 @@ local dialog_enter = {
     },
 }
 
+overmap.enter_base = function(self)
+    if game.has_key then
+        -- win
+        print("win!")
+    else
+        -- replay cutscenes
+        print("cutscene")
+    end
+end
+
 overmap.get_current_area = function(self)
     return self:get_area(self.player.pos.x, self.player.pos.y)
 end
 
 overmap.process_tile_events = function(self)
-    if self:get_current_area().enemies > 0 then
-        game.ui.show_dialog(dialog_enter)
-        return
+    local area = self:get_current_area()
+    if area.terrain.type == "city" then
+        if area.enemies > 0 then
+            game.ui.show_dialog(dialog_enter)
+            return
+        end
+    elseif area.terrain.type == "base" then
+        overmap:enter_base()
+    elseif area.terrain.type == "shelter" then
+        print("got key")
+        game.has_key = true
     end
 
     return true
@@ -39,11 +57,13 @@ end
 
 overmap.enter_current_tile = function(self)
     local area = self:get_current_area()
-    if area ~= game.world.data then
-        game.world:load_area(area)
-    end
+    if area.terrain.type == "city" then
+        if area ~= game.world.data then
+            game.world:load_area(area)
+        end
 
-    game:pause(false)
+        game:pause(false)
+    end
 end
 
 game.register_key_callback(function(key)

@@ -92,7 +92,7 @@ game.advance_enemies = function()
                     local adjacent_unoccupied = {}
                     for _, offset in ipairs({-10, -1, 1, 10}) do
                         local area2 = game.areas[idx + offset]
-                        if not area2.terrain.solid and area2.enemies == 0 then
+                        if not area2.terrain.type == "city" and area2.enemies == 0 then
                             table.insert(adjacent_unoccupied, area2)
                         end
                     end

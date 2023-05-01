@@ -13,32 +13,47 @@ local maps = {
 for i = 1, 32 * 32 do maps[1][1][i] = 2 end
 
 local terrain = {
-    void = {
+    {
         texture = "overmap_void.png",
         solid = true,
+        type = "void",
     },
-    river = {
+    {
         texture = "overmap_river.png",
         solid = true,
+        type = "river",
     },
-    city = {
+    {
         texture = "overmap_tile_terrain.png",
+        type = "city",
+    },
+    {
+        texture = "overmap_base.png",
+        type = "base",
+    },
+    {
+        texture = "overmap_shelter.png",
+        type = "shelter",
+    },
+    {
+        texture = "overmap_bridge.png",
+        type = "bridge",
     },
 }
 
 -- TEMPORARY premade map
-local map_terrain = {{
+local map_terrain = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 3, 3, 3, 3, 3, 3, 3, 3, 1,
+    1, 3, 3, 3, 3, 3, 3, 5, 3, 1,
     1, 3, 3, 3, 3, 3, 3, 3, 3, 1,
     1, 3, 3, 3, 3, 3, 3, 3, 3, 1,
     1, 3, 3, 3, 3, 3, 3, 3, 3, 1,
-    1, 3, 3, 3, 3, 3, 3, 3, 3, 1,
-    1, 2, 2, 2, 3, 2, 2, 2, 2, 1,
+    1, 2, 2, 2, 6, 2, 2, 2, 2, 1,
     1, 1, 3, 3, 3, 3, 3, 3, 3, 1,
-    1, 1, 1, 3, 3, 3, 3, 1, 1, 1,
+    1, 1, 1, 3, 4, 3, 3, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-}, {terrain.void, terrain.river, terrain.city}}
+}
 
 local map_occupied = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -73,7 +88,7 @@ for idx = 1, 10 * 10 do
     local enemies = map_occupied[idx] * math.random(1, 40)
 
     areas[idx] = {
-        terrain = map_terrain[2][map_terrain[1][idx]],
+        terrain = terrain[map_terrain[idx]],
         discovered = map_discovered[idx] == 1,
         tiles = maps[1],
         max_enemies = enemies,
