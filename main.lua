@@ -53,6 +53,8 @@ game.menu = require("menu")
 game.camera = require("camera")
 game.world = require("world")
 
+game.areas = require("areas")
+
 game.pause = function(self, pause)
     self.paused = pause
     if pause then
@@ -66,6 +68,8 @@ function love.keypressed(key)
 end
 
 function love.load()
+    math.randomseed(os.time())
+
     love.window.setTitle("Althema")
 
     love.window.setMode(game.width, game.height)

@@ -8,27 +8,13 @@ local world = {
     tile_w = 32, tile_h = 32,
 }
 
-game.world_tiles = {
-    {
-        {},
-        {1, 1, 1, 1},
-        {
-            0, 0, 3, 3, 3, 3, 3, 3, 3,
-            physical = true,
-        },
-    },
-}
-
--- TEMPORARY ground tiles
-for i = 1, world.width * world.height do game.world_tiles[1][1][i] = 2 end
-
-world.enter_tile = function(self, tile_id) -- tile id
+world.load_area = function(self, area) -- tile id
     self.objects = {}
     self.colliders = {}
 
     self.player = player
 
-    self.tiles = game.world_tiles[tile_id]
+    self.data = area
 
     self:load()
 end
@@ -76,10 +62,11 @@ game.register_key_callback(function(key)
 end)
 
 world.load = function(self)
+    math.randomseed(os.time())
     love.physics.setMeter(1)
 
     -- Set up tiles
-    for _, layer in ipairs(self.tiles) do
+    for _, layer in ipairs(self.data.tiles) do
         if layer.physical then
             for idx = 1, self.width * self.height do
                 if layer[idx] and layer[idx] > 0 then
@@ -93,10 +80,14 @@ world.load = function(self)
     -- Populate objects
     self:add_object(self.player)
 
-    enemy:spawn(vec2.new(10, 10), enemy.types.medium)
+    for _ = 1, self.data.enemies do
+        enemy:spawn(vec2.new(math.random(1, self.width), math.random(1, self.height)), enemy.types.medium)
+    end
 end
 
 world.update = function(self, dtime)
+    if self.data.enemies == 0 then return game:pause(true) end
+
     for object in pairs(self.objects) do
         object:update(dtime)
     end
@@ -106,7 +97,7 @@ end
 
 world.draw = function(self)
     -- Draw world tiles
-    for _, layer in ipairs(self.tiles) do
+    for _, layer in ipairs(self.data.tiles) do
         for idx = 1, self.width * self.height do
             local x, y = (idx - 1) % self.width, math.floor((idx - 1) / self.width)
 

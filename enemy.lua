@@ -45,6 +45,7 @@ enemy.on_hit = function(self, info)
 
     if self.hp <= 0 then
         game.world:remove_object(self)
+        game.world.data.enemies = game.world.data.enemies - 1
     end
 end
 
