@@ -70,7 +70,7 @@ local areas = {}
 
 for idx = 1, 10 * 10 do
     math.randomseed(os.clock())
-    local enemies = map_occupied[idx] * math.random(1, 20)
+    local enemies = map_occupied[idx] * math.random(1, 40)
 
     areas[idx] = {
         terrain = map_terrain[2][map_terrain[1][idx]],

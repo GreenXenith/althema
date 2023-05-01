@@ -6,7 +6,7 @@ local overmap = {
 }
 
 overmap.player = {
-    pos = vec2.new(5, 7),
+    pos = vec2.new(4, 8),
     last_pos = vec2.zero(),
 }
 
@@ -140,7 +140,8 @@ overmap.draw = function(self)
             self:draw_tile(x, y, area.terrain.texture)
 
             if area.enemies > 0 then
-                self:draw_tile(x, y, "overmap_tile_enemy.png")
+                local difficulty = math.min(5, math.ceil(area.enemies / 8))
+                self:draw_tile(x, y, "overmap_tile_enemy_" .. difficulty .. ".png")
             end
 
             if y == ppos.y and x == ppos.x then

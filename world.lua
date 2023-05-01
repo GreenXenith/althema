@@ -62,6 +62,54 @@ game.register_key_callback(function(key)
     end
 end)
 
+world.remove_enemy = function(self)
+    game.world.data.enemies = game.world.data.enemies - 1
+
+    if self.data.enemies == 0 then
+        self:clear()
+    end
+end
+
+world.clear = function(self)
+    local area = self.data
+    game.areas[area.index - 11].discovered = true
+    game.areas[area.index - 10].discovered = true
+    game.areas[area.index - 9 ].discovered = true
+    game.areas[area.index - 1 ].discovered = true
+    game.areas[area.index + 1 ].discovered = true
+    game.areas[area.index + 9 ].discovered = true
+    game.areas[area.index + 10].discovered = true
+    game.areas[area.index + 11].discovered = true
+end
+
+game.advance_enemies = function()
+    for idx, area in ipairs(game.areas) do
+        if area.max_enemies > 0 then
+            if area.enemies < area.max_enemies then
+                area.enemies = math.min(area.max_enemies, area.enemies + math.random(2, 4))
+            else
+                if area.enemies > 20 then
+                    local adjacent_unoccupied = {}
+                    for _, offset in ipairs({-10, -1, 1, 10}) do
+                        local area2 = game.areas[idx + offset]
+                        if not area2.terrain.solid and area2.enemies == 0 then
+                            table.insert(adjacent_unoccupied, area2)
+                        end
+                    end
+
+                    if #adjacent_unoccupied > 0 then
+                        local adjacent = adjacent_unoccupied[math.random(1, #adjacent_unoccupied)]
+                        if adjacent.max_enemies == 0 then
+                            adjacent.max_enemies = 22
+                        end
+                        adjacent.enemies = math.random(4, 8)
+                    end
+                end
+            end
+        end
+    end
+end
+
 world.load = function(self)
     math.randomseed(os.time())
     love.physics.setMeter(1)
@@ -84,26 +132,6 @@ world.load = function(self)
     for _ = 1, self.data.enemies do
         enemy:spawn(vec2.new(math.random(1, self.width), math.random(1, self.height)), enemy.types.medium)
     end
-end
-
-world.remove_enemy = function(self)
-    game.world.data.enemies = game.world.data.enemies - 1
-
-    if self.data.enemies == 0 then
-        self:clear()
-    end
-end
-
-world.clear = function(self)
-    local area = self.data
-    game.areas[area.index - 11].discovered = true
-    game.areas[area.index - 10].discovered = true
-    game.areas[area.index - 9 ].discovered = true
-    game.areas[area.index - 1 ].discovered = true
-    game.areas[area.index + 1 ].discovered = true
-    game.areas[area.index + 9 ].discovered = true
-    game.areas[area.index + 10].discovered = true
-    game.areas[area.index + 11].discovered = true
 end
 
 world.update = function(self, dtime)

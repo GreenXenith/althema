@@ -11,6 +11,7 @@ player.texture = "player.png"
 
 player.speed = 10
 player.hp = 100
+player.hp_max = 100
 player.weapons = {}
 player.active = true
 player.alignment = "humans"
@@ -54,7 +55,11 @@ player.on_hit = function(self, info)
 end
 
 player.die = function(self)
-    print("dead")
+    game.menu.overmap.player.pos = vec2.new(4, 8)
+    game.advance_enemies()
+
+    self.hp = self.hp_max
+    game:pause(true)
 end
 
 local bullets = {
