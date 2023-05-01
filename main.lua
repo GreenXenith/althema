@@ -107,6 +107,4 @@ function love.draw()
     else
         game.menu:draw()
     end
-
-    game.ui:draw()
 end

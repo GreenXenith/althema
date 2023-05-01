@@ -71,14 +71,15 @@ end
 
 world.clear = function(self)
     local area = self.data
-    game.areas[area.index - 11].discovered = true
-    game.areas[area.index - 10].discovered = true
-    game.areas[area.index - 9 ].discovered = true
-    game.areas[area.index - 1 ].discovered = true
-    game.areas[area.index + 1 ].discovered = true
-    game.areas[area.index + 9 ].discovered = true
-    game.areas[area.index + 10].discovered = true
-    game.areas[area.index + 11].discovered = true
+    local w = game.menu.overmap.width
+    game.areas[area.index - (w + 1)].discovered = true
+    game.areas[area.index -  w     ].discovered = true
+    game.areas[area.index - (w - 1)].discovered = true
+    game.areas[area.index -  1     ].discovered = true
+    game.areas[area.index +  1     ].discovered = true
+    game.areas[area.index + (w - 1)].discovered = true
+    game.areas[area.index +  w     ].discovered = true
+    game.areas[area.index + (w + 1)].discovered = true
 end
 
 game.advance_enemies = function()
@@ -89,7 +90,7 @@ game.advance_enemies = function()
             else
                 if area.enemies > 20 then
                     local adjacent_unoccupied = {}
-                    for _, offset in ipairs({-10, -1, 1, 10}) do
+                    for _, offset in ipairs({-game.menu.overmap.width, -1, 1, game.menu.overmap.width}) do
                         local area2 = game.areas[idx + offset]
                         if not area2.terrain.type == "city" and area2.enemies == 0 then
                             table.insert(adjacent_unoccupied, area2)

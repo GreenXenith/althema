@@ -21,10 +21,10 @@ player.alignment = "humans"
 player.draw_hp = function(self, x, y, scale)
     local uh, lh = self.hp.upper / 100, self.hp.lower / 100
 
-    love.graphics.setColor(math.max(0, 1 - uh), math.min(uh, 1), 0)
+    love.graphics.setColor(math.max(0, 1 - (uh - 0.5)), math.min(uh * 2, 1), 0)
     love.graphics.draw(game.media["hp_upper.png"], x, y, 0, scale, scale)
 
-    love.graphics.setColor(math.max(0, 1 - lh), math.min(lh, 1), 0)
+    love.graphics.setColor(math.max(0, 1 - (lh - 0.5)), math.min(lh * 2, 1), 0)
     love.graphics.draw(game.media["hp_lower.png"], x, y, 0, scale, scale)
 
     love.graphics.setColor(1, 1, 1)

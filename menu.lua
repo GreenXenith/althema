@@ -3,7 +3,7 @@ local menu = {
     main_width = 0.6,
 
     state = "overmap",
-    dmg_str = "DMG: %s%% / %s%%",
+    dmg_str = "DMG: %d%% / %d%%",
 }
 
 menu.overmap = require("overmap")
@@ -18,7 +18,7 @@ menu.load = function(self)
     menu.damage_text = love.graphics.newText(game.ui.font, "")
 end
 
-menu.update = function(_, dtime) end
+menu.update = function() end
 
 menu.draw = function(self)
     if self.state == "overmap" then
@@ -36,6 +36,8 @@ menu.draw = function(self)
                 offset.x + w / 2, offset.y + h / 2,
                 0, scale, scale
             )
+
+            game.ui.draw_prompt()
 
             love.graphics.setColor(0, 1, 1)
             love.graphics.setLineWidth(2)

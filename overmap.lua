@@ -10,17 +10,13 @@ overmap.player = {
     last_pos = vec2.zero(),
 }
 
-overmap.get_area = function(self, x, y)
-    return game.areas[y * self.width + x + 1]
-end
-
-local dialog_enter = {
+local prompt_enter = {
     width = 600, height = 300,
-    texture = "dialog_bg.png",
-    text = {"Enter occupied territory?", {0.5, 0.3}, 0.5},
-    buttons = {
-        {"btn_yes", "Yes", {150, 75}, {0.175, 0.6}, "button_bg.png"},
-        {"btn_no", "No", {150, 75}, {0.575, 0.6}, "button_bg.png"},
+    texture = "prompt_bg.png",
+    text = {
+        {"Enter occupied territory?", {0.5, 0.4}, 0.7},
+        {"Yes [select]", {0.25, 0.75}, 0.6},
+        {"No [escape]", {0.75, 0.75}, 0.6},
     },
 }
 
@@ -34,6 +30,10 @@ overmap.enter_base = function(self)
     end
 end
 
+overmap.get_area = function(self, x, y)
+    return game.areas[y * self.width + x + 1]
+end
+
 overmap.get_current_area = function(self)
     return self:get_area(self.player.pos.x, self.player.pos.y)
 end
@@ -42,7 +42,7 @@ overmap.process_tile_events = function(self)
     local area = self:get_current_area()
     if area.terrain.type == "city" then
         if area.enemies > 0 then
-            game.ui.show_dialog(dialog_enter)
+            game.ui.show_prompt(75, 50, prompt_enter, 0.9)
             return
         end
     elseif area.terrain.type == "base" then
@@ -69,13 +69,15 @@ end
 game.register_key_callback(function(key)
     if not game.paused then return end
 
-    -- Handle dialog inputs
-    if game.ui.dialog then
+    -- Handle prompt inputs
+    if game.ui.prompt then
         if game.keybinds.exit[key] then
             overmap.player.pos = overmap.player.last_pos
-            game.ui.hide_dialog()
+            game.ui.hide_prompt()
+        elseif game.keybinds.select[key] then
+            overmap:enter_current_tile()
+            game.ui.hide_prompt()
         end
-
         return
     end
 
@@ -112,24 +114,6 @@ game.register_key_callback(function(key)
         overmap:process_tile_events()
     end
 end)
-
-function love.mousepressed(x, y, button)
-    if game.ui.dialog then
-        if button == 1 then
-            for name, rect in pairs(game.ui.dialog.buttons) do
-                if x >= rect[1] and x <= rect[3] and y >= rect[2] and y <= rect[4] then
-                    if name == "btn_no" then
-                        overmap.player.pos = overmap.player.last_pos
-                    elseif name == "btn_yes" then
-                        overmap:enter_current_tile()
-                    end
-
-                    game.ui.hide_dialog()
-                end
-            end
-        end
-    end
-end
 
 overmap.load = function(self)
     self.canvas = love.graphics.newCanvas(self.tile_w * self.width, self.tile_h * self.height)
