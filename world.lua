@@ -57,7 +57,7 @@ world.remove_object = function(self, o)
 end
 
 game.register_key_callback(function(key)
-    if not game.paused and game.keybinds.exit[key] then
+    if not game.paused and (game.keybinds.exit[key] or game.keybinds.menu[key]) then
         return game:pause(true)
     end
 end)
@@ -86,21 +86,27 @@ world.load = function(self)
     end
 end
 
-world.update = function(self, dtime)
+world.remove_enemy = function(self)
+    game.world.data.enemies = game.world.data.enemies - 1
+
     if self.data.enemies == 0 then
-        local area = self.data
-        game.areas[area.index - 11].discovered = true
-        game.areas[area.index - 10].discovered = true
-        game.areas[area.index - 9 ].discovered = true
-        game.areas[area.index - 1 ].discovered = true
-        game.areas[area.index + 1 ].discovered = true
-        game.areas[area.index + 9 ].discovered = true
-        game.areas[area.index + 10].discovered = true
-        game.areas[area.index + 11].discovered = true
-
-        return game:pause(true)
+        self:clear()
     end
+end
 
+world.clear = function(self)
+    local area = self.data
+    game.areas[area.index - 11].discovered = true
+    game.areas[area.index - 10].discovered = true
+    game.areas[area.index - 9 ].discovered = true
+    game.areas[area.index - 1 ].discovered = true
+    game.areas[area.index + 1 ].discovered = true
+    game.areas[area.index + 9 ].discovered = true
+    game.areas[area.index + 10].discovered = true
+    game.areas[area.index + 11].discovered = true
+end
+
+world.update = function(self, dtime)
     for object in pairs(self.objects) do
         object:update(dtime)
     end

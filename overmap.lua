@@ -24,20 +24,25 @@ local dialog_enter = {
     },
 }
 
-overmap.process_current_tile = function(self)
-    local ppos = self.player.pos
-    local area = self:get_area(ppos.x, ppos.y)
+overmap.get_current_area = function(self)
+    return self:get_area(self.player.pos.x, self.player.pos.y)
+end
 
-    if area.enemies > 0 then
+overmap.process_tile_events = function(self)
+    if self:get_current_area().enemies > 0 then
         game.ui.show_dialog(dialog_enter)
-    elseif game.ui.dialog then
-        game.ui.hide_dialog()
+        return
     end
+
+    return true
 end
 
 overmap.enter_current_tile = function(self)
-    local area = self:get_area(self.player.pos.x, self.player.pos.y)
-    game.world:load_area(area)
+    local area = self:get_current_area()
+    if area ~= game.world.data then
+        game.world:load_area(area)
+    end
+
     game:pause(false)
 end
 
@@ -54,7 +59,15 @@ game.register_key_callback(function(key)
         return
     end
 
+    -- Manual enter
+    if game.keybinds.select[key] then
+        overmap:enter_current_tile()
+        return
+    end
+
     -- Try to move
+    if overmap:get_current_area().enemies > 0 then return end
+
     local move = vec2.zero()
     if game.keybinds.up[key] then
         move.y = -1
@@ -76,7 +89,7 @@ game.register_key_callback(function(key)
         overmap.player.last_pos = overmap.player.pos
         overmap.player.pos = target
 
-        overmap:process_current_tile()
+        overmap:process_tile_events()
     end
 end)
 
@@ -111,6 +124,7 @@ end
 
 overmap.draw = function(self)
     local ppos = self.player.pos
+    local current_area = self:get_current_area()
 
     love.graphics.setCanvas(self.canvas)
 
@@ -119,6 +133,10 @@ overmap.draw = function(self)
         local area = game.areas[idx]
 
         if area.discovered then
+            if current_area.enemies > 0 and area ~= current_area then
+                love.graphics.setColor(0.6, 0.6, 0.6)
+            end
+
             self:draw_tile(x, y, area.terrain.texture)
 
             if area.enemies > 0 then
@@ -128,6 +146,8 @@ overmap.draw = function(self)
             if y == ppos.y and x == ppos.x then
                 self:draw_tile(x, y, "overmap_icon_mech.png")
             end
+
+            love.graphics.setColor(1, 1, 1, 1)
         else
             self:draw_tile(x, y, "undiscovered.png")
         end

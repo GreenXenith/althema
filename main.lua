@@ -35,9 +35,8 @@ game.keybinds = {
     down = keybind("down", "s"),
     left = keybind("left", "a"),
     right = keybind("right", "d"),
-    select = keybind("space", "enter"),
-    map = keybind("m", "q"),
-    inventory = keybind("i", "e"),
+    select = keybind("space", "return"),
+    menu = keybind("m", "q", "i", "e"),
     exit = keybind("escape"),
 }
 
@@ -86,8 +85,8 @@ function love.load()
     game:pause(true)
 
     if game.DEVMODE then
-        game.menu.overmap.player.pos = vec2.new(4, 4)
-        game.menu.overmap:enter_current_tile()
+        -- game.menu.overmap.player.pos = vec2.new(4, 4)
+        -- game.menu.overmap:enter_current_tile()
     end
 end
 
