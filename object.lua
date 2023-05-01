@@ -79,6 +79,9 @@ end
 
 object.remove = function(self)
     if self.collider then game.world:remove_collider(self.collider) end
+    for child in pairs(self.children) do
+        game.world:remove_object(child)
+    end
 end
 
 return object

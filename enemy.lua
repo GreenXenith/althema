@@ -1,5 +1,6 @@
 local object = require("object")
 local vec2 = require("vector2")
+local weapon = require("weapon")
 
 local enemy = object:new()
 enemy.__index = enemy
@@ -15,27 +16,61 @@ enemy.types = {
         sense_range = 5,
         hostility = 3,
         aggression = 2, -- -2: flee, -1: flee and shoot, 0: wait, 1: shoot, 2: pursue and shoot
+        tactics = 1, -- 1: simple/inefficient, 2: simple/fast, 3: smart
+    }
+}
+
+local bullets = {
+    {
+        damage = 5,
+        texture = "bullet_crude.png",
+        size = vec2.new(1.25, 1.25),
+    }
+}
+
+local weapons = {
+    standard = {
+        texture = "gun_enemy.png",
+        size = vec2.new(1.5, 1.5),
+        firerate = 1, -- rounds per minute
+        bullet = bullets[1],
+        bullet_speed = 25,
     }
 }
 
 enemy.spawn = function(self, pos, def)
     local o = setmetatable(object:new(), self)
 
-    for key, value in pairs(def) do self[key] = value end
+    for key, value in pairs(def) do o[key] = value end
     o.pos = pos
-    o.brain = {
+    o.weapons = {}
+
+    game.world:add_object(o)
+end
+
+enemy.load = function(self)
+    self.brain = {
         angle = 0,
         want_to_move = 0,
         chance_per_second = 0.5,
-        home = pos,
+        home = self.pos,
         destination = nil,
         target = nil,
         follow = nil,
     }
 
-    o:set_collider(o.size * 0.75)
+    self:set_collider(self.size * 0.75)
 
-    game.world:add_object(o)
+    local gun = game.world:add_object(weapon:new(weapons.standard), 3)
+    gun:attach(self, vec2.new(0.1, -0.3), 0, true, true)
+
+    self.weapons = {gun}
+end
+
+enemy.shoot = function(self)
+    for _, firearm in ipairs(self.weapons) do
+        firearm:fire()
+    end
 end
 
 enemy.on_hit = function(self, info)
@@ -92,6 +127,11 @@ enemy.do_logic = function(self, dtime)
     if brain.target then
         if self.aggression > 0 then
             brain.destination = brain.target.pos
+            if self.tactics == 1 then
+                if math.random() > 0.99 then
+                    self:shoot()
+                end
+            end
         end
     end
 

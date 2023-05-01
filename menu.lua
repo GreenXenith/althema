@@ -1,5 +1,3 @@
-local overmap = require("overmap")
-
 local menu = {
     padding = 50,
     main_width = 0.666,
@@ -8,8 +6,10 @@ local menu = {
     state = "overmap",
 }
 
+menu.overmap = require("overmap")
+
 menu.load = function(self)
-    overmap:load()
+    self.overmap:load()
 
     local ww, wh = love.window.getMode()
     menu.main_area = love.graphics.newCanvas(ww * self.main_width, wh - self.padding * 2)
@@ -21,6 +21,7 @@ end
 
 menu.draw = function(self)
     if self.state == "overmap" then
+        local overmap = self.overmap
         overmap:draw()
 
         self.main_area:renderTo(function()
@@ -36,6 +37,7 @@ menu.draw = function(self)
             )
 
             love.graphics.setColor(0, 255, 255)
+            love.graphics.setLineWidth(2)
             love.graphics.rectangle("line", 0, 0, self.main_area:getWidth(), self.main_area:getHeight())
             love.graphics.setColor(255, 255, 255)
         end)

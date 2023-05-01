@@ -5,13 +5,12 @@ local weapon = require("weapon")
 local player = object:new()
 player.name = "player"
 
-player.pos = vec2.new(5, 5)
 player.size = vec2.new(2, 2)
 player.z_index = 0
 player.texture = "player.png"
 
 player.speed = 10
-player.hp = 10000
+player.hp = 100
 player.weapons = {}
 player.active = true
 player.alignment = "humans"
@@ -44,17 +43,40 @@ player.shoot = function(self)
     end
 end
 
+player.on_hit = function(self, info)
+    if info.damage then
+        self.hp = self.hp - info.damage
+    end
+
+    if self.hp <= 0 then
+        self:die()
+    end
+end
+
+player.die = function(self)
+    print("dead")
+end
+
+local bullets = {
+    {
+        damage = 10,
+        texture = "bullet.png",
+        size = vec2.new(0.75, 0.75),
+    }
+}
+
 local weapons = {
     standard = {
         texture = "gun.png",
         size = vec2.new(1.5, 1.5),
         firerate = 1500, -- rounds per minute
         bullet_speed = 50,
-        damage = 10,
+        bullet = bullets[1]
     }
 }
 
 player.load = function(self)
+    player.pos = vec2.new(5, 5)
     self:set_collider(self.size)
 
     local bl = game.world:add_object(weapon:new(weapons.standard), 1)

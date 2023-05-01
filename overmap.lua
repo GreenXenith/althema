@@ -44,6 +44,7 @@ end
 game.register_key_callback(function(key)
     if not game.paused then return end
 
+    -- Handle dialog inputs
     if game.ui.dialog then
         if game.keybinds.exit[key] then
             overmap.player.pos = overmap.player.last_pos
@@ -53,6 +54,7 @@ game.register_key_callback(function(key)
         return
     end
 
+    -- Try to move
     local move = vec2.zero()
     if game.keybinds.up[key] then
         move.y = -1
@@ -70,7 +72,7 @@ game.register_key_callback(function(key)
     local target = move + overmap.player.pos
     local area = overmap:get_area(target.x, target.y)
 
-    if not area.terrain.solid then
+    if not area.terrain.solid and area.discovered then
         overmap.player.last_pos = overmap.player.pos
         overmap.player.pos = target
 

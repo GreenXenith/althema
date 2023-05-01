@@ -1,7 +1,10 @@
+local vec2 = require("vector2")
+
 game = {
     media = {},
     paused = false,
     width = 1280, height = 720,
+    DEVMODE = true,
 }
 
 local function load_textures(path)
@@ -81,6 +84,11 @@ function love.load()
 
     -- Begin on menu
     game:pause(true)
+
+    if game.DEVMODE then
+        game.menu.overmap.player.pos = vec2.new(4, 4)
+        game.menu.overmap:enter_current_tile()
+    end
 end
 
 function love.update(dtime)
