@@ -38,6 +38,7 @@ menu.draw = function(self)
             )
 
             game.ui.draw_prompt()
+            game.ui.draw_status(w / 2, h - 30, 0.75)
 
             love.graphics.setColor(0, 1, 1)
             love.graphics.setLineWidth(2)

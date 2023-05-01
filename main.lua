@@ -97,6 +97,8 @@ function love.update(dtime)
     else
         game.menu:update(dtime)
     end
+
+    game.ui.update_status(dtime)
 end
 
 function love.draw()

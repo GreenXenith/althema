@@ -80,6 +80,8 @@ world.clear = function(self)
     game.areas[area.index + (w - 1)].discovered = true
     game.areas[area.index +  w     ].discovered = true
     game.areas[area.index + (w + 1)].discovered = true
+
+    game.ui.set_status("Area clear!", 5)
 end
 
 game.advance_enemies = function()
@@ -143,6 +145,8 @@ world.update = function(self, dtime)
 end
 
 world.draw = function(self)
+    local w, h = love.window.getMode()
+
     -- Draw world tiles
     for _, layer in ipairs(self.data.tiles) do
         for idx = 1, self.width * self.height do
@@ -189,6 +193,7 @@ world.draw = function(self)
     game.camera:draw(game.media["crosshair.png"], cx, cy)
 
     game.world.player:draw_hp(32, 32, 5)
+    game.ui.draw_status(w / 2, h * 0.85, 0.75)
 end
 
 return world

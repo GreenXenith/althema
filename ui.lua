@@ -1,6 +1,26 @@
 local ui = {
     prompt = nil,
+    status = nil,
 }
+
+ui.set_status = function(str, time)
+    if ui.status then
+        ui.status.text:set(str)
+        ui.status._timer = time
+    end
+end
+
+ui.update_status = function(dtime)
+    if ui.status and ui.status._timer > 0 then
+        ui.status._timer = math.max(0, ui.status._timer - dtime)
+    end
+end
+
+ui.draw_status = function(x, y, scale)
+    if ui.status._timer > 0 then
+        love.graphics.draw(ui.status.text, x - ui.status.text:getWidth() / 2, y - ui.status.text:getHeight() / 2, 0, scale)
+    end
+end
 
 ui.show_prompt = function(x, y, def, scale)
     ui.prompt = {
@@ -44,5 +64,9 @@ end
 
 return function(config)
     ui.font = config.font
+    ui.status = {
+        text = love.graphics.newText(config.font, ""),
+        _timer = 0,
+    }
     return ui
 end
