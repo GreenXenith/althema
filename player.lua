@@ -3,6 +3,7 @@ local object = require("object")
 local weapon = require("weapon")
 
 local player = object:new()
+player.name = "player"
 
 player.pos = vec2.new(5, 5)
 player.size = vec2.new(2, 2)
@@ -48,12 +49,14 @@ local weapons = {
         texture = "gun.png",
         size = vec2.new(1.5, 1.5),
         firerate = 1500, -- rounds per minute
-        bullet_speed = 100,
+        bullet_speed = 50,
         damage = 10,
     }
 }
 
 player.load = function(self)
+    self:set_collider(self.size)
+
     local bl = game.world:add_object(weapon:new(weapons.standard), 1)
     bl:attach(self, vec2.new(-0.1, -0.75), 0, true, true)
 

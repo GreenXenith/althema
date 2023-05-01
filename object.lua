@@ -15,13 +15,35 @@ object.new = function(self, o)
 end
 
 object.set_collider = function(self, size)
-    self.collider = love.physics.newRectangleShape(size.x, size.y)
+    self.collider = game.world:new_collider(self, size)
 end
 
 object.update = function(self, dtime)
     if self.velocity then
         if self.velocity.x ~= 0 or self.velocity.y ~= 0 then
-            self.pos = self.pos + self.velocity * dtime
+            if self.collider then
+                local travel = self.velocity * dtime
+
+                self.pos.x = self.pos.x + travel.x
+                for collider2 in pairs(game.world.colliders) do
+                    if collider2 ~= self.collider then
+                        if self.collider:intersection(collider2) then
+                            self.pos.x = self.pos.x - travel.x
+                        end
+                    end
+                end
+
+                self.pos.y = self.pos.y + travel.y
+                for collider2 in pairs(game.world.colliders) do
+                    if collider2 ~= self.collider then
+                        if self.collider:intersection(collider2) then
+                            self.pos.y = self.pos.y - travel.y
+                        end
+                    end
+                end
+            else
+                self.pos = self.pos + self.velocity * dtime
+            end
         end
     end
 
@@ -53,6 +75,10 @@ object.attach = function(self, other, position, rotation, relative_position, rel
     }
 
     self.parent = other
+end
+
+object.remove = function(self)
+    if self.collider then game.world:remove_collider(self.collider) end
 end
 
 return object

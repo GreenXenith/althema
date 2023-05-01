@@ -27,23 +27,28 @@ bullet.update = function(self, dtime)
     local old_pos = self.pos
     object.update(self, dtime)
 
-    for o in pairs(game.world.objects) do
-        if o.collider then
-            local nx, _, f = o.collider:rayCast(old_pos.x, old_pos.y, self.pos.x, self.pos.y, 1, o.pos.x, o.pos.y, 0)
-            if nx then
+    for collider in pairs(game.world.colliders) do
+        local nx, _, f = collider.shape:rayCast(
+            old_pos.x, old_pos.y,
+            self.pos.x, self.pos.y, 1,
+            collider.parent.pos.x, collider.parent.pos.y, 0
+        )
+
+        if nx then
+            if collider.parent.on_hit then
                 local hit_pos = vec2.new(
                     old_pos.x + (self.pos.x - old_pos.x) * f,
                     old_pos.y + (self.pos.y - old_pos.y) * f
                 )
 
-                if o.on_hit then o:on_hit({
+                collider.parent:on_hit({
                     hit_pos = hit_pos,
                     source = "bullet",
                     damage = self.damage,
-                }) end
-
-                return game.world:remove_object(self)
+                })
             end
+
+            return game.world:remove_object(self)
         end
     end
 end

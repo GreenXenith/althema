@@ -1,5 +1,6 @@
 local vec2 = require("vector2")
 local enemy = require("enemy")
+local collider = require("collider")
 
 local world = {
     seed = math.random() * 2 ^ 32,
@@ -7,19 +8,39 @@ local world = {
     tile_w = 32, tile_h = 32,
 
     objects = {},
+    colliders = {},
 
     player = require("player"),
 
     tiles = {
         {},
-        {},
+        {1, 1, 1, 1},
+        {
+            0, 0, 3, 3, 3, 3, 3, 3, 3,
+            physical = true,
+        },
     },
 }
 
+for i = 1, world.width * world.height do world.tiles[1][i] = 2 end
+
 local world_tiles = {
-    [0] = "asphalt.png",
+    "asphalt.png",
     "concrete.png",
+    "wall.png",
 }
+
+world.new_collider = function(self, parent, size)
+    assert(parent)
+    local c = collider:new(parent, size)
+
+    self.colliders[c] = c
+    return c
+end
+
+world.remove_collider = function(self, c)
+    self.colliders[c] = nil
+end
 
 world.add_object = function(self, o, z_index)
     self.objects[o] = o
@@ -42,6 +63,19 @@ end
 world.load = function(self)
     love.physics.setMeter(1)
 
+    -- Set up tiles
+    for _, layer in ipairs(self.tiles) do
+        if layer.physical then
+            for idx = 1, self.width * self.height do
+                if layer[idx] and layer[idx] > 0 then
+                    local x, y = (idx - 1) % self.width, math.floor((idx - 1) / self.width)
+                    world:new_collider({pos = vec2.new(x, y), name = "wall"}, vec2.new(1, 1))
+                end
+            end
+        end
+    end
+
+    -- Populate objects
     self:add_object(self.player)
 
     enemy:spawn(vec2.new(10, 10), enemy.types.medium)
@@ -56,16 +90,22 @@ world.update = function(self, dtime)
 end
 
 world.draw = function(self)
-    for idx = 1, self.width * self.height do
-        local x, y = (idx - 1) % self.width, math.floor((idx - 1) / self.width)
+    -- Draw world tiles
+    for _, layer in ipairs(self.tiles) do
+        for idx = 1, self.width * self.height do
+            local x, y = (idx - 1) % self.width, math.floor((idx - 1) / self.width)
 
-        local texture = world_tiles[self.tiles[1][idx] or 1]
-        game.camera:draw(game.media[texture], x, y)
+            local tile_idx = layer[idx] or 0
+            if tile_idx > 0 then
+                game.camera:draw(game.media[world_tiles[tile_idx]], x, y)
+            end
+        end
     end
 
     -- Draw objects
     local layers = {}
     local min_z, max_z = 0, 0
+    -- Sort z layers first
     for object in pairs(self.objects) do
         if object.texture then
             local z = object.z_index or 0
@@ -76,6 +116,7 @@ world.draw = function(self)
         end
     end
 
+    -- Render layers in order
     for z = min_z, max_z do
         if layers[z] then
             for _, object in ipairs(layers[z]) do
