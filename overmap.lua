@@ -2,11 +2,11 @@ local vec2 = require("vector2")
 
 local overmap = {
     tile_w = 32, tile_h = 32,
-    width = 10, height = 10,
+    width = 12, height = 12,
 }
 
 overmap.player = {
-    pos = vec2.new(4, 7),
+    pos = vec2.new(4, 8),
     last_pos = vec2.zero(),
 }
 
@@ -161,7 +161,7 @@ overmap.draw = function(self)
 
             if area.enemies > 0 then
                 local difficulty = math.min(5, math.ceil(area.enemies / 8))
-                self:draw_tile(x, y, "overmap_tile_enemy_" .. difficulty .. ".png")
+                self:draw_tile(x, y, "overmap_enemy_" .. difficulty .. ".png")
             end
 
             if y == ppos.y and x == ppos.x then
@@ -170,7 +170,7 @@ overmap.draw = function(self)
 
             love.graphics.setColor(1, 1, 1, 1)
         else
-            self:draw_tile(x, y, "undiscovered.png")
+            self:draw_tile(x, y, "overmap_undiscovered.png")
         end
     end
 

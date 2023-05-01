@@ -10,8 +10,10 @@ player.z_index = 0
 player.texture = "player.png"
 
 player.speed = 10
-player.hp = 100
-player.hp_max = 100
+player.hp = {
+    upper = 100,
+    lower = 100,
+}
 player.weapons = {}
 player.active = true
 player.alignment = "humans"
@@ -46,10 +48,14 @@ end
 
 player.on_hit = function(self, info)
     if info.damage then
-        self.hp = self.hp - info.damage
+        if math.random() > 0.5 then
+            self.hp.upper = self.hp.upper - info.damage
+        else
+            self.hp.lower = self.hp.lower - info.damage
+        end
     end
 
-    if self.hp <= 0 then
+    if self.hp.upper <= 0 or self.hp.lower <= 0 then
         self:die()
     end
 end
@@ -58,7 +64,8 @@ player.die = function(self)
     game.menu.overmap.player.pos = vec2.new(4, 8)
     game.advance_enemies()
 
-    self.hp = self.hp_max
+    self.hp.upper = 100
+    self.hp.lower = 100
     game:pause(true)
 end
 

@@ -22,7 +22,7 @@ enemy.types = {
 
 local bullets = {
     {
-        damage = 5,
+        damage = 3,
         texture = "bullet_crude.png",
         size = vec2.new(1.25, 1.25),
     }
