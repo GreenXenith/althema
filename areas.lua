@@ -70,12 +70,14 @@ local areas = {}
 
 for idx = 1, 10 * 10 do
     math.randomseed(os.clock())
+    local enemies = map_occupied[idx] * math.random(1, 20)
 
     areas[idx] = {
         terrain = map_terrain[2][map_terrain[1][idx]],
         discovered = map_discovered[idx] == 1,
         tiles = maps[1],
-        enemies = map_occupied[idx] * math.random(1, 20),
+        max_enemies = enemies,
+        enemies = enemies,
         index = idx,
     }
 end

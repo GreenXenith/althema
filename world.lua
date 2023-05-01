@@ -15,6 +15,7 @@ world.load_area = function(self, area) -- tile id
     self.player = player
 
     self.data = area
+    self.data.enemies = self.data.enemies or self.data.max_enemies
 
     self:load()
 end
