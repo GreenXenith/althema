@@ -4,7 +4,7 @@ collider.__index = collider
 collider.new = function(self, parent, size)
     local o = setmetatable({
         shape = love.physics.newRectangleShape(size.x, size.y),
-        parent = parent
+        parent = parent,
     }, self)
 
     return o

@@ -1,6 +1,60 @@
 local object = require("object")
 local vec2 = require("vector2")
 local weapon = require("weapon")
+local collider = require("collider")
+
+local item = object:new({
+    hp_upper = 0,
+    hp_lower = 0,
+    name = "",
+})
+item.__index = item
+
+item.new = function(self, pos, def)
+    local o = setmetatable(object:new(), self)
+
+    for key, value in pairs(def) do o[key] = value end
+    o.pos = pos
+
+    game.world:add_object(o)
+end
+
+item.load = function(self)
+    self.sensor = collider:new(self, self.size)
+end
+
+item.collect = function(self)
+    game.world.player.hp.upper = math.min(game.world.player.hp.upper + self.hp_upper, 100)
+    game.world.player.hp.lower = math.min(game.world.player.hp.lower + self.hp_lower, 100)
+
+    game.ui.set_status(("Collected %s. %s"):format(self.name, self.stats), 5)
+    game.world:remove_object(self)
+end
+
+item.update = function(self)
+    if game.world.player.collider then
+        if self.sensor:intersection(game.world.player.collider) then
+            self:collect()
+        end
+    end
+end
+
+local item_types = {
+    {
+        name = "Scrap Metal",
+        stats = "+30% upper HP",
+        hp_upper = 30,
+        hp_lower = 5,
+        texture = "scrap.png",
+    },
+    {
+        name = "Random Hardware",
+        stats = "+30% lower HP",
+        hp_upper = 5,
+        hp_lower = 30,
+        texture = "gears.png",
+    }
+}
 
 local enemy = object:new()
 enemy.__index = enemy
@@ -86,6 +140,10 @@ end
 enemy.die = function(self)
     game.world:remove_object(self)
     game.world:remove_enemy(self)
+
+    if math.random() > 0.75 then
+        item:new(self.pos, item_types[math.random(1, #item_types)])
+    end
 end
 
 enemy.move_to = function(self, pos)

@@ -18,7 +18,7 @@ end
 
 ui.draw_status = function(x, y, scale)
     if ui.status._timer > 0 then
-        love.graphics.draw(ui.status.text, x - ui.status.text:getWidth() / 2, y - ui.status.text:getHeight() / 2, 0, scale)
+        love.graphics.draw(ui.status.text, x - ui.status.text:getWidth() * scale / 2, y - ui.status.text:getHeight() * scale / 2, 0, scale)
     end
 end
 
