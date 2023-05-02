@@ -103,7 +103,7 @@ function love.update(dtime)
 end
 
 function love.draw()
-    love.graphics.clear()
+    love.graphics.clear(0, 0, 0)
 
     if not game.paused then
         game.world:draw()
