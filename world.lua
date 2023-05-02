@@ -80,7 +80,7 @@ world.clear = function(self)
     game.areas[area.index +  w     ].discovered = true
     game.areas[area.index + (w + 1)].discovered = true
 
-    game.ui.set_status("Area clear!", 5)
+    game.ui.set_status("Area clear! (ESC)", 5)
 end
 
 game.advance_enemies = function()
@@ -132,7 +132,7 @@ world.load = function(self)
     self:add_object(self.player)
 
     for _ = 1, self.data.enemies do
-        enemy:spawn(vec2.new(math.random(2, tiles.width - 1), math.random(2, tiles.height - 1)), enemy.types.medium)
+        enemy:spawn(vec2.new(math.random(16, tiles.width - 5), math.random(16, tiles.height - 5)), enemy.types.medium)
     end
 end
 

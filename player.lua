@@ -78,6 +78,9 @@ player.die = function(self)
 
     self.hp.upper = 100
     self.hp.lower = 100
+
+    game.ui.set_status("Returning for repairs. Enemy regained territory.", 5)
+
     game:pause(true)
 end
 
@@ -100,14 +103,10 @@ local weapons = {
 }
 
 player.load = function(self)
-    player.pos = vec2.new(5, 5)
     self:set_collider(self.size)
 
     local bl = game.world:add_object(weapon:new(weapons.standard), 1)
     bl:attach(self, vec2.new(-0.1, -0.75), 0, true, true)
-
-    local ml = game.world:add_object(weapon:new(weapons.standard), 2)
-    ml:attach(self, vec2.new(0.5, -0.6), 0, true, true)
 
     local tl = game.world:add_object(weapon:new(weapons.standard), 3)
     tl:attach(self, vec2.new(0.1, -0.3), 0, true, true)
@@ -115,13 +114,10 @@ player.load = function(self)
     local br = game.world:add_object(weapon:new(weapons.standard), 1)
     br:attach(self, vec2.new(-0.1, 0.75), 0, true, true)
 
-    local mr = game.world:add_object(weapon:new(weapons.standard), 2)
-    mr:attach(self, vec2.new(0.5, 0.6), 0, true, true)
-
     local tr = game.world:add_object(weapon:new(weapons.standard), 3)
     tr:attach(self, vec2.new(0.1, 0.3), 0, true, true)
 
-    player.weapons = {bl, ml, tl, br, mr, tr}
+    player.weapons = {bl, tl, br, tr}
 end
 
 player.update = function(self, dtime)

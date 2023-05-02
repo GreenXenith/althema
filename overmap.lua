@@ -72,6 +72,7 @@ overmap.enter_current_tile = function(self)
             game.world:load_area(area)
         end
 
+        game.world.player.pos = vec2.new(5, 5)
         game:pause(false)
     end
 end
