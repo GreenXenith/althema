@@ -42,14 +42,14 @@ end
 local item_types = {
     {
         name = "Scrap Metal",
-        stats = "+30% upper HP",
+        stats = "+30% HP (top)",
         hp_upper = 30,
         hp_lower = 5,
         texture = "scrap.png",
     },
     {
         name = "Random Hardware",
-        stats = "+30% lower HP",
+        stats = "+30% HP (bottom)",
         hp_upper = 5,
         hp_lower = 30,
         texture = "gears.png",

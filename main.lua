@@ -4,7 +4,7 @@ game = {
     media = {},
     paused = false,
     width = 1280, height = 720,
-    DEVMODE = true,
+    DEVMODE = false,
 }
 
 local function load_textures(path)

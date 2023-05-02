@@ -20,15 +20,15 @@ local prompt_enter = {
     },
 }
 
-local prompt_playagain = {
-    width = 600, height = 300,
-    texture = "prompt_bg.png",
-    text = {
-        {"Play cutscene again?", {0.5, 0.4}, 0.7},
-        {"Yes [select]", {0.25, 0.75}, 0.6},
-        {"No [escape]", {0.75, 0.75}, 0.6},
-    },
-}
+-- local prompt_playagain = {
+--     width = 600, height = 300,
+--     texture = "prompt_bg.png",
+--     text = {
+--         {"Play cutscene again?", {0.5, 0.4}, 0.7},
+--         {"Yes [select]", {0.25, 0.75}, 0.6},
+--         {"No [escape]", {0.75, 0.75}, 0.6},
+--     },
+-- }
 
 overmap.enter_base = function(self)
     if game.has_key then

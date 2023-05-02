@@ -4,7 +4,6 @@ local collider = require("collider")
 local player = require("player")
 
 local world = {
-    width = 32, height = 32,
     tile_w = 32, tile_h = 32,
     player = player,
 }
@@ -117,11 +116,12 @@ world.load = function(self)
     love.physics.setMeter(1)
 
     -- Set up tiles
-    for _, layer in ipairs(self.data.tiles) do
+    local tiles = self.data.tiles
+    for _, layer in ipairs(tiles) do
         if layer.physical then
-            for idx = 1, self.width * self.height do
+            for idx = 1, tiles.width * tiles.height do
                 if layer[idx] and layer[idx] > 0 then
-                    local x, y = (idx - 1) % self.width, math.floor((idx - 1) / self.width)
+                    local x, y = (idx - 1) % tiles.width, math.floor((idx - 1) / tiles.width)
                     world:new_collider({pos = vec2.new(x, y), name = "wall"}, vec2.new(1, 1))
                 end
             end
@@ -132,7 +132,7 @@ world.load = function(self)
     self:add_object(self.player)
 
     for _ = 1, self.data.enemies do
-        enemy:spawn(vec2.new(math.random(1, self.width), math.random(1, self.height)), enemy.types.medium)
+        enemy:spawn(vec2.new(math.random(2, tiles.width - 1), math.random(2, tiles.height - 1)), enemy.types.medium)
     end
 end
 
@@ -148,9 +148,10 @@ world.draw = function(self)
     local w, h = love.window.getMode()
 
     -- Draw world tiles
-    for _, layer in ipairs(self.data.tiles) do
-        for idx = 1, self.width * self.height do
-            local x, y = (idx - 1) % self.width, math.floor((idx - 1) / self.width)
+    local tiles = self.data.tiles
+    for _, layer in ipairs(tiles) do
+        for idx = 1, tiles.width * tiles.height do
+            local x, y = (idx - 1) % tiles.width, math.floor((idx - 1) / tiles.width)
 
             local tile_idx = layer[idx] or 0
             if tile_idx > 0 then

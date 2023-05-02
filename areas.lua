@@ -1,16 +1,23 @@
 local maps = {
     {
+        width = 64, height = 64,
         {},
-        {1, 1, 1, 1},
-        {
-            0, 0, 3, 3, 3, 3, 3, 3, 3,
-            physical = true,
-        },
+        {physical = true},
     },
 }
 
--- TEMPORARY ground tiles
-for i = 1, 32 * 32 do maps[1][1][i] = 2 end
+for _, map in ipairs(maps) do
+    for i = 1, map.width * map.height do maps[1][1][i] = 2 end -- Ground tiles
+
+    -- Road
+    local wmid, hmid = map.width / 2, map.height / 2
+    local rw = 16
+    for x = wmid - rw / 2, wmid + rw / 2 do for y = 1, map.height do maps[1][1][(y - 1) * map.width + x] = 1 end end
+    for y = hmid - rw / 2, hmid + rw / 2 do for x = 1, map.height do maps[1][1][(y - 1) * map.width + x] = 1 end end
+
+    for i = 1, map.width * map.height do maps[1][2][i] = 3 end -- Walls
+    for x = 2, map.width - 1 do for y = 2, map.height - 1 do maps[1][2][(y - 1) * map.width + x] = 0 end end
+end
 
 local terrain = {
     {
