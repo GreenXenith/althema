@@ -20,24 +20,12 @@ local prompt_enter = {
     },
 }
 
--- local prompt_playagain = {
---     width = 600, height = 300,
---     texture = "prompt_bg.png",
---     text = {
---         {"Play cutscene again?", {0.5, 0.4}, 0.7},
---         {"Yes [select]", {0.25, 0.75}, 0.6},
---         {"No [escape]", {0.75, 0.75}, 0.6},
---     },
--- }
-
 overmap.enter_base = function(self)
-    if game.has_key then
-        -- win
-        print("win!")
-    else
-        -- replay cutscenes
-        print("cutscene")
-    end
+    -- if game.has_key then
+        -- game.menu:show_slide("slide_win.png")
+    -- else
+        game.menu:show_slide("slide1.png")
+    -- end
 end
 
 overmap.get_area = function(self, x, y)
@@ -58,8 +46,7 @@ overmap.process_tile_events = function(self)
     elseif area.terrain.type == "base" then
         overmap:enter_base()
     elseif area.terrain.type == "shelter" then
-        print("got key")
-        game.has_key = true
+        game.menu:show_slide("slide_win.png")
     end
 
     return true
@@ -79,6 +66,10 @@ end
 
 game.register_key_callback(function(key)
     if not game.paused then return end
+    if game.menu.slide then
+        game.menu:hide_slide()
+        return
+    end
 
     -- Handle prompt inputs
     if game.ui.prompt then

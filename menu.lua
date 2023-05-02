@@ -4,9 +4,18 @@ local menu = {
 
     state = "overmap",
     dmg_str = "DMG: %d%% / %d%%",
+    slide = nil,
 }
 
 menu.overmap = require("overmap")
+
+menu.show_slide = function(self, texture)
+    self.slide = game.media[texture]
+end
+
+menu.hide_slide = function(self)
+    self.slide = nil
+end
 
 menu.load = function(self)
     self.overmap:load()
@@ -28,22 +37,29 @@ menu.draw = function(self)
         self.main_area:renderTo(function()
             love.graphics.clear()
             local w, h = self.main_area:getDimensions()
-            local scale = w / overmap.width / overmap.tile_w
-            local offset = (-overmap.player.pos - 0.5) * 32 * scale
 
-            love.graphics.draw(
-                overmap.canvas,
-                offset.x + w / 2, offset.y + h / 2,
-                0, scale, scale
-            )
+            if self.slide then
+                local sw, sh = self.slide:getDimensions()
+                local scale = math.min(w / sw, h / sh)
+                love.graphics.draw(self.slide, 0, 0, 0, scale, scale)
+            else
+                local scale = w / overmap.width / overmap.tile_w
+                local offset = (-overmap.player.pos - 0.5) * 32 * scale
 
-            game.ui.draw_prompt()
-            game.ui.draw_status(w / 2, h - 30, 0.5)
+                love.graphics.draw(
+                    overmap.canvas,
+                    offset.x + w / 2, offset.y + h / 2,
+                    0, scale, scale
+                )
 
-            love.graphics.setColor(0, 1, 1)
-            love.graphics.setLineWidth(2)
-            love.graphics.rectangle("line", 0, 0, self.main_area:getWidth(), self.main_area:getHeight())
-            love.graphics.setColor(1, 1, 1)
+                game.ui.draw_prompt()
+                game.ui.draw_status(w / 2, h - 30, 0.5)
+
+                love.graphics.setColor(0, 1, 1)
+                love.graphics.setLineWidth(2)
+                love.graphics.rectangle("line", 0, 0, self.main_area:getWidth(), self.main_area:getHeight())
+                love.graphics.setColor(1, 1, 1)
+            end
         end)
 
         self.status_area:renderTo(function()

@@ -83,6 +83,7 @@ function love.load()
 
     -- Begin on menu
     game.menu:load()
+    game.menu:show_slide("slide1.png")
     game:pause(true)
 
     if game.DEVMODE then
